@@ -7,7 +7,10 @@ setup(
     author="Open Data Product",
     author_email="opendataproduct@gmail.com",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=[
+        "dacite>=1.9.2",
+        "pyyaml>=6.0.2",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
     ],
