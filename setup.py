@@ -9,6 +9,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "dacite>=1.9.2",
+        "pandas>=2.3.0",
         "pyyaml>=6.0.2",
         "requests>=2.32.3",
     ],
