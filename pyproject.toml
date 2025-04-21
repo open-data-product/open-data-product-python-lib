@@ -1,0 +1,9 @@
+[project]
+name = "open-data-product-python-lib"
+version = "0.1.0"
+description = "Python library to build data products"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "setuptools>=80.9.0",
+]
