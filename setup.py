@@ -10,6 +10,7 @@ setup(
     install_requires=[
         "dacite>=1.9.2",
         "pyyaml>=6.0.2",
+        "requests>=2.32.3",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
