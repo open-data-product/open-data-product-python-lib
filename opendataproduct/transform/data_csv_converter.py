@@ -3,7 +3,9 @@ import warnings
 
 import pandas as pd
 
-from opendataproduct.config.data_transformation_silver_loader import DataTransformation
+from opendataproduct.config.data_transformation_silver_loader import (
+    DataTransformation,
+)
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -78,20 +80,22 @@ def convert_data_to_csv(
                         {
                             name.name: name.type
                             for name in names
-                            if name.action == "keep"
+                            if not name.action == "remove"
                         },
                         errors="ignore",
                     )
 
                     # Apply filter
                     dataframe = dataframe.filter(
-                        items=[name.name for name in names if name.action == "keep"]
+                        items=[
+                            name.name for name in names if not name.action == "remove"
+                        ]
                     )
 
                     # Apply zfill
                     dataframe = (
                         dataframe[
-                            [name.name for name in names if name.action == "keep"]
+                            [name.name for name in names if not name.action == "remove"]
                         ]
                         .astype(str)
                         .apply(

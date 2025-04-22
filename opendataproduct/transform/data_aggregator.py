@@ -2,7 +2,9 @@ import os
 
 import pandas as pd
 
-from opendataproduct.config.data_transformation_gold_loader import DataTransformation
+from opendataproduct.config.data_transformation_gold_loader import (
+    DataTransformation,
+)
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 
@@ -35,8 +37,6 @@ def aggregate_data(
                     # Read csv file
                     dataframe = pd.read_csv(csv_file, dtype=str, keep_default_na=False)
 
-                    names = file.names
-
                     # Apply trim
                     dataframe = dataframe.applymap(
                         lambda col: col.strip() if isinstance(col, str) else col
@@ -46,8 +46,9 @@ def aggregate_data(
                     dataframe = dataframe.astype(
                         {
                             name.name: name.type
-                            for name in names
-                            if name.name in dataframe.columns and name.action == "keep"
+                            for name in file.names
+                            if name.name in dataframe.columns
+                            and not name.action == "remove"
                         },
                         errors="ignore",
                     )
@@ -89,20 +90,20 @@ def aggregate_data(
                         lambda col: col.str.zfill(
                             next(
                                 name.zfill if name.zfill is not None else 0
-                                for name in names
+                                for name in file.names
                                 if name.name == col.name
                             )
                         )
                     )
 
                     # Apply copy
-                    for name in [name for name in names if name.action == "copy"]:
+                    for name in [name for name in file.names if name.action == "copy"]:
                         dataframe[name.name] = dataframe[name.copy]
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
                     # Apply concatenation
                     for name in [
-                        name for name in names if name.action == "concatenation"
+                        name for name in file.names if name.action == "concatenation"
                     ]:
                         dataframe[name.name] = dataframe[name.concat].agg(
                             "".join, axis=1
@@ -110,7 +111,9 @@ def aggregate_data(
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
                     # Apply fraction
-                    for name in [name for name in names if name.action == "percentage"]:
+                    for name in [
+                        name for name in file.names if name.action == "percentage"
+                    ]:
                         dataframe[name.name] = (
                             dataframe[name.numerator]
                             .astype(float)
@@ -122,7 +125,7 @@ def aggregate_data(
                     # Apply mapping
                     for name in [
                         name
-                        for name in names
+                        for name in file.names
                         if name.action == "mapping" and name.mapping is not None
                     ]:
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
@@ -131,7 +134,9 @@ def aggregate_data(
                     # Apply filter
                     dataframe = dataframe.filter(
                         items=[
-                            name.name for name in names if not name.action == "remove"
+                            name.name
+                            for name in file.names
+                            if not name.action == "remove"
                         ]
                     )
 

@@ -4,8 +4,12 @@ from datetime import datetime
 
 import yaml
 
-from lib.config.data_product_manifest_loader import DataProductManifest, Port, Metadata
-from lib.tracking_decorator import TrackingDecorator
+from opendataproduct.config.data_product_manifest_loader import (
+    DataProductManifest,
+    Port,
+    Metadata,
+)
+from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 class IndentDumper(yaml.Dumper):
