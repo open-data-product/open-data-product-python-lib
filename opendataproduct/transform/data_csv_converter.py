@@ -77,26 +77,18 @@ def convert_data_to_csv(
 
                     # Apply data type
                     dataframe = dataframe.astype(
-                        {
-                            name.name: name.type
-                            for name in names
-                            if not name.action == "remove"
-                        },
+                        {name.name: name.type for name in names if not name.remove},
                         errors="ignore",
                     )
 
                     # Apply filter
                     dataframe = dataframe.filter(
-                        items=[
-                            name.name for name in names if not name.action == "remove"
-                        ]
+                        items=[name.name for name in names if not name.remove]
                     )
 
                     # Apply zfill
                     dataframe = (
-                        dataframe[
-                            [name.name for name in names if not name.action == "remove"]
-                        ]
+                        dataframe[[name.name for name in names if not name.remove]]
                         .astype(str)
                         .apply(
                             lambda col: col.str.zfill(

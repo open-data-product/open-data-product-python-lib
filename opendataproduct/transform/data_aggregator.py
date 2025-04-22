@@ -47,8 +47,7 @@ def aggregate_data(
                         {
                             name.name: name.type
                             for name in file.names
-                            if name.name in dataframe.columns
-                            and not name.action == "remove"
+                            if name.name in dataframe.columns and not name.remove
                         },
                         errors="ignore",
                     )
@@ -97,14 +96,12 @@ def aggregate_data(
                     )
 
                     # Apply copy
-                    for name in [name for name in file.names if name.action == "copy"]:
+                    for name in [name for name in file.names if name.copy]:
                         dataframe[name.name] = dataframe[name.copy]
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
                     # Apply concatenation
-                    for name in [
-                        name for name in file.names if name.action == "concatenation"
-                    ]:
+                    for name in [name for name in file.names if name.concat]:
                         dataframe[name.name] = dataframe[name.concat].agg(
                             "".join, axis=1
                         )
@@ -112,7 +109,9 @@ def aggregate_data(
 
                     # Apply fraction
                     for name in [
-                        name for name in file.names if name.action == "percentage"
+                        name
+                        for name in file.names
+                        if name.numerator and name.denominator
                     ]:
                         dataframe[name.name] = (
                             dataframe[name.numerator]
@@ -124,20 +123,14 @@ def aggregate_data(
 
                     # Apply mapping
                     for name in [
-                        name
-                        for name in file.names
-                        if name.action == "mapping" and name.mapping is not None
+                        name for name in file.names if name.mapping is not None
                     ]:
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
                     # Apply filter
                     dataframe = dataframe.filter(
-                        items=[
-                            name.name
-                            for name in file.names
-                            if not name.action == "remove"
-                        ]
+                        items=[name.name for name in file.names if not name.remove]
                     )
 
                     os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
