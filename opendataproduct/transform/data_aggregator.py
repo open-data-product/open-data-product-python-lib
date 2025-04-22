@@ -47,7 +47,7 @@ def aggregate_data(
                         {
                             name.name: name.type
                             for name in file.names
-                            if name.name in dataframe.columns and not name.remove
+                            if name.name in dataframe.columns
                         },
                         errors="ignore",
                     )
@@ -74,31 +74,36 @@ def aggregate_data(
                     # Apply aggregation
                     if file.aggregate_by is not None:
                         if file.aggregate_by != "total":
-                            dataframe = dataframe.apply(pd.to_numeric, errors="ignore")
+                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
                             dataframe = dataframe.groupby(
                                 file.aggregate_by, as_index=False
                             ).sum()
                         else:
-                            dataframe = dataframe.apply(pd.to_numeric, errors="ignore")
-                            dataframe = pd.DataFrame(dataframe.sum()).transpose()
+                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
+                            dataframe = (
+                                pd.DataFrame(dataframe.sum()).transpose().astype(int)
+                            )
                             dataframe["id"] = 0
                             dataframe.insert(0, "id", dataframe.pop("id"))
 
-                    # Apply zfill
-                    dataframe = dataframe.astype(str).apply(
-                        lambda col: col.str.zfill(
-                            next(
-                                name.zfill if name.zfill is not None else 0
-                                for name in file.names
-                                if name.name == col.name
-                            )
-                        )
-                    )
-
                     # Apply copy
-                    for name in [name for name in file.names if name.copy]:
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.copy and name.copy in dataframe.columns
+                    ]:
                         dataframe[name.name] = dataframe[name.copy]
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
+
+                    # Apply zfill
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.zfill
+                    ]:
+                        dataframe[name.name] = (
+                            dataframe[name.name].astype(str).str.zfill(name.zfill)
+                        )
 
                     # Apply concatenation
                     for name in [name for name in file.names if name.concat]:
@@ -111,7 +116,10 @@ def aggregate_data(
                     for name in [
                         name
                         for name in file.names
-                        if name.numerator and name.denominator
+                        if name.numerator
+                        and name.numerator in dataframe.columns
+                        and name.denominator
+                        and name.denominator in dataframe.columns
                     ]:
                         dataframe[name.name] = (
                             dataframe[name.numerator]
@@ -122,15 +130,17 @@ def aggregate_data(
                         )
 
                     # Apply mapping
-                    for name in [
-                        name for name in file.names if name.mapping is not None
-                    ]:
+                    for name in [name for name in file.names if name.mapping]:
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
                     # Apply filter
                     dataframe = dataframe.filter(
-                        items=[name.name for name in file.names if not name.remove]
+                        items=[
+                            name.name
+                            for name in file.names
+                            if name.name in dataframe.columns and not name.remove
+                        ]
                     )
 
                     os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
