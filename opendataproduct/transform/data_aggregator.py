@@ -149,6 +149,14 @@ def aggregate_data(
                         ]
                     )
 
+                    # Apply rename
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.rename
+                    ]:
+                        dataframe = dataframe.rename(columns={name.name: name.rename})
+
                     os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
                     dataframe.to_csv(target_file_path, index=False)
                     converted += 1

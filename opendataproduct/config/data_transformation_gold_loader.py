@@ -1,7 +1,6 @@
 import collections
 import os
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import List, Optional, Dict
 
 import yaml
@@ -40,7 +39,9 @@ class Name:
     mapping: Optional[Dict] = None
     key: Optional[str] = "id"
 
+    # Remove and rename
     remove: Optional[bool] = None
+    rename: Optional[str] = None
 
 
 @dataclass
