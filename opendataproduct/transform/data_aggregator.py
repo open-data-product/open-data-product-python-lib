@@ -52,6 +52,19 @@ def aggregate_data(
                         errors="ignore",
                     )
 
+                    # Apply concatenation
+                    for name in [name for name in file.names if name.concat]:
+                        dataframe[name.name] = dataframe[name.concat].agg(
+                            "".join, axis=1
+                        )
+                        dataframe.insert(0, name.name, dataframe.pop(name.name))
+
+                    # Apply split
+                    for name in [name for name in file.names if name.split]:
+                        dataframe[name.name] = dataframe[name.split.name].str[
+                            name.split.last_n : name.split.first_n
+                        ]
+
                     # Apply filter
                     for filter in file.filters or []:
                         if filter.operation == "starts_with":
@@ -105,13 +118,6 @@ def aggregate_data(
                             dataframe[name.name].astype(str).str.zfill(name.zfill)
                         )
 
-                    # Apply concatenation
-                    for name in [name for name in file.names if name.concat]:
-                        dataframe[name.name] = dataframe[name.concat].agg(
-                            "".join, axis=1
-                        )
-                        dataframe.insert(0, name.name, dataframe.pop(name.name))
-
                     # Apply fraction
                     for name in [
                         name
@@ -134,7 +140,7 @@ def aggregate_data(
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
-                    # Apply filter
+                    # Apply remove
                     dataframe = dataframe.filter(
                         items=[
                             name.name

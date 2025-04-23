@@ -13,17 +13,34 @@ from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 @dataclass
+class Split:
+    name: str
+    first_n: Optional[int] = None
+    last_n: Optional[int] = None
+
+
+@dataclass
 class Name:
     name: str
     type: Optional[str] = "str"
-    remove: Optional[bool] = None
-    zfill: Optional[int] = None
-    copy: Optional[str] = None
+
+    # Concat and split
     concat: Optional[List[str]] = None
+    split: Optional[Split] = None
+
+    # Copy and zfill
+    copy: Optional[str] = None
+    zfill: Optional[int] = None
+
+    # Percentage
     numerator: Optional[str] = None
     denominator: Optional[str] = None
-    key: Optional[str] = "id"
+
+    # Mapping
     mapping: Optional[Dict] = None
+    key: Optional[str] = "id"
+
+    remove: Optional[bool] = None
 
 
 @dataclass
