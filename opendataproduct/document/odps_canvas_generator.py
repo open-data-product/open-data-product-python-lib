@@ -33,6 +33,7 @@ def generate_odps_canvas(
             content += "\n* metadata:"
             for key, value in odps.details.metadata.items():
                 content += f"\n  * {key}: {value}"
+        content += "\n"
 
     if odps.product:
         content += "\n## Product"
@@ -81,6 +82,7 @@ def generate_odps_canvas(
                 content += f"\n* version: {odps.product.en.version}"
             if odps.product.en.visibility:
                 content += f"\n* visibility: {odps.product.en.visibility}"
+            content += "\n"
 
         if odps.product.sla and len(odps.product.sla) > 0:
             content += "\n### Service Level Agreements (SLA)"
@@ -103,6 +105,8 @@ def generate_odps_canvas(
                         content += f"\n* objective: {sla.objective}"
                     if sla.unit:
                         content += f"\n* unit: {sla.unit}"
+                content += "\n"
+
         if odps.product.dataAccess:
             content += "\n### Data Access"
             content += "\n"
@@ -118,6 +122,7 @@ def generate_odps_canvas(
                 content += f"\n* specification: {odps.product.dataAccess.specification}"
             if odps.product.dataAccess.type:
                 content += f"\n* type: {odps.product.dataAccess.type}"
+            content += "\n"
 
         if odps.product.dataHolder:
             content += "\n### Data Holder"
@@ -166,6 +171,7 @@ def generate_odps_canvas(
                 content += f"\n* tax ID: {odps.product.dataHolder.taxID}"
             if odps.product.dataHolder.vatID:
                 content += f"\n* vat ID: {odps.product.dataHolder.vatID}"
+            content += "\n"
 
         if odps.product.dataOps:
             content += "\n### Data Operations (DataOps)"
@@ -185,12 +191,14 @@ def generate_odps_canvas(
                     content += f"\n* script URL: {odps.product.dataOps.build.scriptURL}"
                 if odps.product.dataOps.build.signatureType:
                     content += f"\n* signature type: {odps.product.dataOps.build.signatureType}"
+                content += "\n"
 
             if odps.product.dataOps.data:
                 content += "\n#### Data"
                 content += "\n"
                 if odps.product.dataOps.data.schemaLocationURL:
                     content += f"\n* schema location URL: {odps.product.dataOps.data.schemaLocationURL}"
+                content += "\n"
 
             if odps.product.dataOps.infrastructure:
                 content += "\n#### Infrastructure"
@@ -209,6 +217,7 @@ def generate_odps_canvas(
                     content += f"\n* storage technology: {odps.product.dataOps.infrastructure.storageTechnology}"
                 if odps.product.dataOps.infrastructure.storageType:
                     content += f"\n* storage type: {odps.product.dataOps.infrastructure.storageType}"
+                content += "\n"
 
             if odps.product.dataOps.lineage:
                 content += "\n#### Lineage"
@@ -217,6 +226,7 @@ def generate_odps_canvas(
                     content += f"\n* data lineage output: {odps.product.dataOps.lineage.dataLineageOutput}"
                 if odps.product.dataOps.lineage.dataLineageTool:
                     content += f"\n* data lineage tool: {odps.product.dataOps.lineage.dataLineageTool}"
+                content += "\n"
 
         if odps.product.dataQuality and len(odps.product.dataQuality) > 0:
             for data_quality in odps.product.dataQuality:
@@ -241,6 +251,7 @@ def generate_odps_canvas(
                         content += f"\n* objective: {data_quality.objective}"
                     if data_quality.unit:
                         content += f"\n* unit: {data_quality.unit}"
+            content += "\n"
 
         if odps.product.license:
             content += "\n### License"
@@ -267,6 +278,7 @@ def generate_odps_canvas(
                     content += (
                         f"\n* warranties: {odps.product.license.governance.warranties}"
                     )
+                content += "\n"
 
             if odps.product.license.scope:
                 content += "\n#### Scope"
@@ -294,6 +306,7 @@ def generate_odps_canvas(
                     content += "\n* rights:"
                     for rights in odps.product.license.scope.rights:
                         content += f"\n  * {rights}"
+                content += "\n"
 
             if odps.product.license.termination:
                 content += "\n#### Termination"
@@ -302,6 +315,7 @@ def generate_odps_canvas(
                     content += f"\n* continuityConditions: {odps.product.license.termination.continuityConditions}"
                 if odps.product.license.termination.terminationConditions:
                     content += f"\n* terminationConditions: {odps.product.license.termination.terminationConditions}"
+                content += "\n"
 
         if odps.product.pricingPlans and len(odps.product.pricingPlans.en) > 0:
             content += "\n### Pricing Plans"
@@ -321,6 +335,7 @@ def generate_odps_canvas(
                     content += f"\n* price currency: {pricing_plan.priceCurrency}"
                 if pricing_plan.unit:
                     content += f"\n* unit: {pricing_plan.unit}"
+            content += "\n"
 
         if odps.product.support:
             content += "\n### Support"
@@ -341,6 +356,7 @@ def generate_odps_canvas(
                 content += (
                     f"\n* phone service hours: {odps.product.support.phoneServiceHours}"
                 )
+            content += "\n"
 
         if (
             odps.product.recommendedDataProducts
@@ -350,6 +366,11 @@ def generate_odps_canvas(
             content += "\n"
             for recommended_data_product in odps.product.recommendedDataProducts:
                 content += f"\n* {recommended_data_product}"
+            content += "\n"
+
+    content += "\n"
+    content += "\n---"
+    content += "\nThis Open Data Product Specification canvas is based on [OPEN DATA PRODUCT SPECIFICATION 3.1](https://opendataproducts.org/v3.1/#open-data-product-specification-3-1)."
 
     with open(odps_canvas_path, "w") as file:
         file.write(content)
