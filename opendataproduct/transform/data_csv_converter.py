@@ -40,22 +40,44 @@ def convert_data_to_csv(
                 engine = "openpyxl" if source_file_extension == ".xlsx" else None
 
                 try:
-                    # Read Excel file
-                    dataframe = pd.read_excel(
-                        source_file_path,
-                        engine=engine,
-                        sheet_name=str(dataset.sheet_name),
-                        header=dataset.header,
-                        names=[name.name for name in dataset.names],
-                        usecols=list(
-                            range(
-                                dataset.skip_cols,
-                                dataset.skip_cols + len(dataset.names),
-                            )
-                        ),
-                        skiprows=dataset.skip_rows,
-                        keep_default_na=False,
-                    )
+                    _, extension = os.path.splitext(source_file_path)
+
+                    if extension in [".xlsx", ".xls"]:
+                        # Read Excel file
+                        dataframe = pd.read_excel(
+                            source_file_path,
+                            engine=engine,
+                            sheet_name=str(dataset.sheet_name),
+                            header=dataset.header,
+                            names=[name.name for name in dataset.names],
+                            usecols=list(
+                                range(
+                                    dataset.skip_cols,
+                                    dataset.skip_cols + len(dataset.names),
+                                )
+                            ),
+                            skiprows=dataset.skip_rows,
+                            keep_default_na=False,
+                        )
+                    elif extension == ".csv":
+                        # Read CSV file
+                        dataframe = pd.read_csv(
+                            source_file_path,
+                            header=dataset.header,
+                            names=[name.name for name in dataset.names],
+                            usecols=list(
+                                range(
+                                    dataset.skip_cols,
+                                    dataset.skip_cols + len(dataset.names),
+                                )
+                            ),
+                            skiprows=dataset.skip_rows,
+                            keep_default_na=False,
+                        )
+                    else:
+                        raise ValueError(
+                            f"✗️ Unsupported file format: {extension}. Only .xlsx, .xls, and .csv are supported."
+                        )
 
                     names = dataset.names
 
