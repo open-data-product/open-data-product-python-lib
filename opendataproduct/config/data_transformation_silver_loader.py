@@ -24,7 +24,7 @@ class Name:
 @dataclass
 class Dataset:
     target_file_name: str
-    sheet_name: str
+    sheet_name: Optional[str] = None
     header: Optional[int] = None
     names: Optional[List[Name]] = field(default_factory=list)
     skip_rows: Optional[int] = 0
