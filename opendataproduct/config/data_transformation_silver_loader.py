@@ -1,8 +1,9 @@
 import collections
 import os
 from dataclasses import dataclass, field
-from enum import Enum
+from datetime import datetime
 from typing import List, Optional
+from jinja2 import Template
 
 import yaml
 from dacite import from_dict
@@ -90,19 +91,22 @@ class Loader(yaml.SafeLoader):
                 value = value_node.value
             else:
                 value = self.construct_object(value_node, deep=deep)
+
             mapping[key] = value
         return mapping
 
 
 @TrackingDecorator.track_time
-def load_data_transformation_silver(config_path) -> DataTransformation:
+def load_data_transformation_silver(config_path, context=None) -> DataTransformation:
     data_transformation_path = os.path.join(
         config_path, "data-transformation-02-silver.yml"
     )
 
     if os.path.exists(data_transformation_path):
         with open(data_transformation_path, "r") as file:
-            data = yaml.load(file, Loader=Loader)
+            context = {} if context is None else context
+            template = Template(file.read()).render(context)
+            data = yaml.load(template, Loader=Loader)
         return from_dict(data_class=DataTransformation, data=data)
     else:
         print(f"✗️ Config file {data_transformation_path} does not exist")
