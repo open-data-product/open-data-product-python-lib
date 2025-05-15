@@ -26,6 +26,7 @@ class Name:
 
     # Concat and split
     concat: Optional[List[str]] = None
+    concat_delimiter: Optional[str] = ""
     split: Optional[Split] = None
 
     # Copy and zfill

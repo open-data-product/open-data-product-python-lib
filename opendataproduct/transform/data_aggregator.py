@@ -55,7 +55,7 @@ def aggregate_data(
                     # Apply concatenation
                     for name in [name for name in file.names if name.concat]:
                         dataframe[name.name] = dataframe[name.concat].agg(
-                            "".join, axis=1
+                            name.concat_delimiter.join, axis=1
                         )
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
