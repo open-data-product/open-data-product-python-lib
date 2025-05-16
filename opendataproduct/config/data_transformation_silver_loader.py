@@ -19,6 +19,7 @@ class Name:
     type: Optional[str] = "str"
     remove: Optional[bool] = None
     zfill: Optional[int] = None
+    lstrip: Optional[str] = None
     value_mapping: Optional[dict] = None
 
 

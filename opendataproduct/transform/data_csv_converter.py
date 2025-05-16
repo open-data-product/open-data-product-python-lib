@@ -123,6 +123,21 @@ def convert_data_to_csv(
                         )
                     )
 
+                    # Apply lstrip
+                    dataframe = (
+                        dataframe[[name.name for name in names if not name.remove]]
+                        .astype(str)
+                        .apply(
+                            lambda col: col.str.lstrip(
+                                next(
+                                    name.lstrip if name.lstrip is not None else ""
+                                    for name in names
+                                    if name.name == col.name
+                                )
+                            )
+                        )
+                    )
+
                     # Apply value mapping
                     for name in [
                         name for name in names if name.value_mapping is not None
