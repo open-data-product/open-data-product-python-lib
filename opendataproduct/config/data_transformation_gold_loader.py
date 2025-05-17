@@ -2,10 +2,10 @@ import collections
 import os
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict
-from datetime import datetime
-from jinja2 import Template
+
 import yaml
 from dacite import from_dict
+from jinja2 import Template
 from yaml import MappingNode
 from yaml.constructor import ConstructorError
 
@@ -40,6 +40,12 @@ class Name:
     # Mapping
     mapping: Optional[Dict] = None
     key: Optional[str] = "id"
+
+    # Coordinate transformation
+    transform_source: Optional[str] = "EPSG:25833"
+    transform_target: Optional[str] = "EPSG:4326"
+    transform_lat: Optional[List[str]] = None
+    transform_lon: Optional[List[str]] = None
 
     # Remove and rename
     remove: Optional[bool] = None

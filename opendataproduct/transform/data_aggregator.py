@@ -1,4 +1,5 @@
 import os
+from pyproj import Transformer
 
 import pandas as pd
 
@@ -140,6 +141,28 @@ def aggregate_data(
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
+                    # Apply coordinate transformation
+                    for name in [name for name in file.names if name.transform_lon]:
+                        dataframe[name.name] = dataframe.apply(
+                            lambda row: transform_lon(
+                                row[name.transform_lon[0]],
+                                row[name.transform_lon[1]],
+                                name.transform_source,
+                                name.transform_target,
+                            ),
+                            axis=1,
+                        )
+                    for name in [name for name in file.names if name.transform_lat]:
+                        dataframe[name.name] = dataframe.apply(
+                            lambda row: transform_lat(
+                                row[name.transform_lat[0]],
+                                row[name.transform_lat[1]],
+                                name.transform_source,
+                                name.transform_target,
+                            ),
+                            axis=1,
+                        )
+
                     # Apply remove
                     dataframe = dataframe.filter(
                         items=[
@@ -170,3 +193,17 @@ def aggregate_data(
     print(
         f"aggregate_data finished with already_exists: {already_exists}, converted: {converted}, exception: {exception}"
     )
+
+
+def transform_lon(source_lon, source_lat, transform_source, transform_target):
+    lon, _ = Transformer.from_crs(
+        transform_source, transform_target, always_xy=True
+    ).transform(source_lon, source_lat)
+    return lon
+
+
+def transform_lat(source_lon, source_lat, transform_source, transform_target):
+    _, lat = Transformer.from_crs(
+        transform_source, transform_target, always_xy=True
+    ).transform(source_lon, source_lat)
+    return lat
