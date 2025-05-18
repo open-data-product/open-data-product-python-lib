@@ -20,6 +20,7 @@ class Name:
     zfill: Optional[int] = None
     lstrip: Optional[str] = None
     value_mapping: Optional[dict] = None
+    format: Optional[str] = None
 
 
 @dataclass

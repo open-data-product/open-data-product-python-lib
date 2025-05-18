@@ -146,6 +146,14 @@ def convert_data_to_csv(
                             name.value_mapping
                         )
 
+                    # Apply format
+                    for name in [
+                        name for name in names if name.format == "phone_number"
+                    ]:
+                        dataframe[name.name] = dataframe[name.name].apply(
+                            lambda row: build_phone_number(row),
+                        )
+
                     # Apply head
                     if dataset.head:
                         dataframe = dataframe.head(dataset.head)
@@ -169,3 +177,8 @@ def convert_data_to_csv(
     print(
         f"convert_data_to_csv finished with already_exists: {already_exists}, converted: {converted}, exception: {exception}"
     )
+
+
+def build_phone_number(row):
+    phone_number = f"{row.replace(' ', '').replace('/', '').replace('-', '').lstrip('‭').rstrip('‬').lstrip('030').lstrip('(030)').replace('------', '')}"
+    return f"+4930{phone_number}" if len(phone_number) > 0 else ""
