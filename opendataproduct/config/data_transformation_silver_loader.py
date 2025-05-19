@@ -16,11 +16,17 @@ from opendataproduct.tracking_decorator import TrackingDecorator
 class Name:
     name: str
     type: Optional[str] = "str"
-    remove: Optional[bool] = None
+
+    # zfill and lstrip
     zfill: Optional[int] = None
     lstrip: Optional[str] = None
+
+    # Value mapping and format
     value_mapping: Optional[dict] = None
     format: Optional[str] = None
+
+    # Remove
+    remove: Optional[bool] = None
 
 
 @dataclass

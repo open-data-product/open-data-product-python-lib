@@ -119,6 +119,16 @@ def aggregate_data(
                             dataframe[name.name].astype(str).str.zfill(name.zfill)
                         )
 
+                    # Apply lstrip
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.lstrip
+                    ]:
+                        dataframe[name.name] = (
+                            dataframe[name.name].astype(str).str.lstrip(name.lstrip)
+                        )
+
                     # Apply fraction
                     for name in [
                         name

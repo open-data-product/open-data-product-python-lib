@@ -29,9 +29,10 @@ class Name:
     concat_delimiter: Optional[str] = ""
     split: Optional[Split] = None
 
-    # Copy and zfill
+    # Copy, zfill and lstrip
     copy: Optional[str] = None
     zfill: Optional[int] = None
+    lstrip: Optional[str] = None
 
     # Percentage
     numerator: Optional[str] = None
