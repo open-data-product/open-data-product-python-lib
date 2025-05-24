@@ -10,7 +10,7 @@ from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 @TrackingDecorator.track_time
-def aggregate_data(
+def aggregate_csv_data(
     data_transformation: DataTransformation,
     source_path,
     results_path,
