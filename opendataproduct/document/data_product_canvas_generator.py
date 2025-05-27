@@ -3,7 +3,7 @@ import os
 from opendataproduct.config.data_product_manifest_loader import DataProductManifest
 from opendataproduct.tracking_decorator import TrackingDecorator
 
-SCHEMA_AS_TABLE = True
+DISPLAY_AS_TABLE = True
 
 
 @TrackingDecorator.track_time
@@ -35,7 +35,7 @@ def generate_data_product_canvas(
         content += "\n## Input Ports"
         content += "\n"
 
-        for port in data_product_manifest.input_ports:
+        for port in data_product_manifest.input_ports or []:
             content += f"\n### {port.metadata.name}"
             content += "\n"
             if port.metadata.owner:
@@ -52,14 +52,14 @@ def generate_data_product_canvas(
                 content += "\n**Schema**"
                 content += "\n"
 
-                if SCHEMA_AS_TABLE:
+                if DISPLAY_AS_TABLE:
                     content += "\n| Name | Description |"
                     content += "\n| --- | --- |"
 
-                    for item in port.metadata.schema:
+                    for item in port.metadata.schema or []:
                         content += f"\n| {item.name} | {item.description} |"
                 else:
-                    for item in port.metadata.schema:
+                    for item in port.metadata.schema or []:
                         content += f"\n* {item.name}: {item.description}"
                 content += "\n"
 
@@ -67,7 +67,7 @@ def generate_data_product_canvas(
                 content += "\n**Files**"
                 content += "\n"
 
-                for file in port.files:
+                for file in port.files or []:
                     content += f"\n* [{file.rsplit('/', 1)[-1]}]({file})"
                 content += "\n"
 
@@ -75,15 +75,15 @@ def generate_data_product_canvas(
         content += "\n## Transformation Steps"
         content += "\n"
 
-        for transformation_step in data_product_manifest.transformation_steps:
-            content += f"\n* [{transformation_step.name}](../{transformation_step.path}) {transformation_step.description}"
+        for transformation_step in data_product_manifest.transformation_steps or []:
+            content += f"\n* [{transformation_step.name}]({transformation_step.path}) {transformation_step.description}"
         content += "\n"
 
     if data_product_manifest.output_ports:
         content += "\n## Output Ports"
         content += "\n"
 
-        for port in data_product_manifest.output_ports:
+        for port in data_product_manifest.output_ports or []:
             content += f"\n### {port.metadata.name}"
             content += "\n"
             if port.metadata.owner:
@@ -100,14 +100,14 @@ def generate_data_product_canvas(
                 content += "\n**Schema**"
                 content += "\n"
 
-                if SCHEMA_AS_TABLE:
+                if DISPLAY_AS_TABLE:
                     content += "\n| Name | Description |"
                     content += "\n| --- | --- |"
 
-                    for item in port.metadata.schema:
+                    for item in port.metadata.schema or []:
                         content += f"\n| {item.name} | {item.description} |"
                 else:
-                    for item in port.metadata.schema:
+                    for item in port.metadata.schema or []:
                         content += f"\n* {item.name}: {item.description}"
                 content += "\n"
 
@@ -115,7 +115,7 @@ def generate_data_product_canvas(
                 content += "\n**Files**"
                 content += "\n"
 
-                for file in port.files:
+                for file in port.files or []:
                     content += f"\n* [{file.rsplit('/', 1)[-1]}]({file})"
                 content += "\n"
 
@@ -132,15 +132,28 @@ def generate_data_product_canvas(
             content += "\n### Quality metrics"
             content += "\n"
 
-            for quality in data_product_manifest.observability.quality:
-                content += f"\n * {quality}"
+            for quality in data_product_manifest.observability.quality or []:
+                content += f"\n * name: {quality.name}"
+                content += f"\n * description: {quality.description}"
+                content += "\n"
+
+                if DISPLAY_AS_TABLE:
+                    content += "\n| Name | Value |"
+                    content += "\n| --- | --- |"
+                    for file in quality.files or []:
+                        content += f"\n| {file.name} | {file.value} |"
+                else:
+                    for file in quality.files or []:
+                        content += f"\n   * {file.name}: {file.value}"
+                content += "\n"
+
             content += "\n"
 
         if data_product_manifest.observability.operational:
             content += "\n### Operational metrics"
             content += "\n"
 
-            for operational in data_product_manifest.observability.operational:
+            for operational in data_product_manifest.observability.operational or []:
                 content += f"\n * {operational}"
             content += "\n"
 
@@ -148,7 +161,7 @@ def generate_data_product_canvas(
             content += "\n### SLAs"
             content += "\n"
 
-            for sla in data_product_manifest.observability.slas:
+            for sla in data_product_manifest.observability.slas or []:
                 content += f"\n * {sla}"
             content += "\n"
 
@@ -157,7 +170,7 @@ def generate_data_product_canvas(
             content += "\n### Security"
             content += "\n"
 
-            for security in data_product_manifest.observability.security:
+            for security in data_product_manifest.observability.security or []:
                 content += f"\n * {security}"
             content += "\n"
 
@@ -171,7 +184,7 @@ def generate_data_product_canvas(
         content += "\nConsumers of this data product may include"
         content += "\n"
 
-        for consumer in data_product_manifest.consumers:
+        for consumer in data_product_manifest.consumers or []:
             content += f"\n* {consumer}"
         content += "\n"
 
@@ -187,7 +200,7 @@ def generate_data_product_canvas(
         content += "\nWe believe that this data product can be used"
         content += "\n"
 
-        for use_case in data_product_manifest.use_cases:
+        for use_case in data_product_manifest.use_cases or []:
             content += f"\n* {use_case}"
         content += "\n"
 
@@ -208,14 +221,14 @@ def generate_data_product_canvas(
         content += "\n**Context-specific domain terminology (relevant for Data Product), Data Product polysemes which are used to create the current Data Product**"
         content += "\n"
 
-        if SCHEMA_AS_TABLE:
+        if DISPLAY_AS_TABLE:
             content += "\n| Name | Description |"
             content += "\n| --- | --- |"
 
-            for term in data_product_manifest.ubiquitous_language:
+            for term in data_product_manifest.ubiquitous_language or []:
                 content += f"\n| {term.name} | {term.description} |"
         else:
-            for term in data_product_manifest.ubiquitous_language:
+            for term in data_product_manifest.ubiquitous_language or []:
                 content += f"\n* **{term.name}** {term.description}"
 
     content += "\n"
