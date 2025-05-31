@@ -85,21 +85,6 @@ def aggregate_csv_data(
                                 ~dataframe[filter.key].str.endswith(filter.value)
                             ]
 
-                    # Apply aggregation
-                    if file.aggregate_by is not None:
-                        if file.aggregate_by != "total":
-                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
-                            dataframe = dataframe.groupby(
-                                file.aggregate_by, as_index=False
-                            ).sum()
-                        else:
-                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
-                            dataframe = (
-                                pd.DataFrame(dataframe.sum()).transpose().astype(int)
-                            )
-                            dataframe["id"] = 0
-                            dataframe.insert(0, "id", dataframe.pop("id"))
-
                     # Apply copy
                     for name in [
                         name
@@ -127,6 +112,31 @@ def aggregate_csv_data(
                     ]:
                         dataframe[name.name] = (
                             dataframe[name.name].astype(str).str.lstrip(name.lstrip)
+                        )
+
+                    # Apply aggregation
+                    if file.aggregate_by is not None:
+                        if file.aggregate_by != "total":
+                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
+                            dataframe = dataframe.groupby(
+                                file.aggregate_by, as_index=False
+                            ).sum()
+                        else:
+                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
+                            dataframe = (
+                                pd.DataFrame(dataframe.sum()).transpose().astype(int)
+                            )
+                            dataframe["id"] = 0
+                            dataframe.insert(0, "id", dataframe.pop("id"))
+
+                    # Apply zfill
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.zfill
+                    ]:
+                        dataframe[name.name] = (
+                            dataframe[name.name].astype(str).str.zfill(name.zfill)
                         )
 
                     # Apply fraction
