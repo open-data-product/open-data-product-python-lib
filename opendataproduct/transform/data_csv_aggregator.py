@@ -114,6 +114,26 @@ def aggregate_csv_data(
                             dataframe[name.name].astype(str).str.lstrip(name.lstrip)
                         )
 
+                    # Apply first
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.first
+                    ]:
+                        dataframe[name.name] = (
+                            dataframe[name.name].astype(str).str[: name.first]
+                        )
+
+                    # Apply last
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.name in dataframe.columns and name.last
+                    ]:
+                        dataframe[name.name] = (
+                            dataframe[name.name].astype(str).str[-name.last :]
+                        )
+
                     # Apply aggregation
                     if file.aggregate_by is not None:
                         if file.aggregate_by != "total":
