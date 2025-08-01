@@ -41,7 +41,7 @@ def convert_to_geojson(data_transformation, source_path, results_path, clean, qu
                         os.path.join(results_path, input_port.id), exist_ok=True
                     )
 
-                    if source_file_extension == ".geojson":
+                    if source_file_extension == ".geojson" or source_file_extension == ".json":
                         shutil.copyfile(source_file_path, target_file_path)
                         converted += 1
                         not quiet and print(f"✓ Copy {file.target_file_name}")
