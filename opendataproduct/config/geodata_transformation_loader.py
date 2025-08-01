@@ -20,11 +20,19 @@ class Add:
 @dataclass
 class Property:
     name: str
+
+    # Concat
     concat: Optional[List[str]] = None
+    zfill: Optional[int] = None
+    last_chars: Optional[int] = None
+
+    # Mapping
+    mapping: Optional[Dict] = None
+    key: Optional[str] = "id"
+
+    # Remove and rename
     rename: Optional[str] = None
     remove: Optional[bool] = None
-    last_chars: Optional[int] = None
-    mapping: Optional[Dict] = None
 
 
 @dataclass

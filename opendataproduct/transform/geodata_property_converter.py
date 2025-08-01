@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 
-from opendataproduct.config.data_transformation_silver_loader import Property
+from opendataproduct.config.geodata_transformation_loader import Property
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 
@@ -68,6 +68,7 @@ def convert_properties(geojson, properties: list[Property]):
         iterable=geojson["features"], desc="Convert features", unit="feature"
     ):
         for property in properties:
+            # Apply concat
             if property.concat is not None and all(
                 prop in feature["properties"] for prop in property.concat
             ):
@@ -76,6 +77,14 @@ def convert_properties(geojson, properties: list[Property]):
                 )
                 changed = True
 
+            # Apply zfill
+            if property.zfill is not None and property.name in feature["properties"]:
+                feature["properties"][property.name] = feature["properties"][
+                    property.name
+                ].zfill(property.zfill)
+                changed = True
+
+            # Apply last chars
             if (
                 property.last_chars is not None
                 and property.name in feature["properties"]
@@ -85,20 +94,23 @@ def convert_properties(geojson, properties: list[Property]):
                 ][-property.last_chars :]
                 changed = True
 
-            if property.rename is not None and property.name in feature["properties"]:
-                feature["properties"][property.rename] = feature["properties"].pop(
-                    property.name
-                )
+            # Apply mapping
+            if property.mapping is not None:
+                key = feature["properties"][property.key]
+                value = property.mapping[key]
+                feature["properties"][property.name] = value
                 changed = True
 
+            # Apply remove
             if property.remove is not None and property.name in feature["properties"]:
                 feature["properties"].pop(property.name)
                 changed = True
 
-            if property.mapping is not None:
-                id = feature["properties"]["id"]
-                value = property.mapping[id]
-                feature["properties"][property.name] = value
+            # Apply rename
+            if property.rename is not None and property.name in feature["properties"]:
+                feature["properties"][property.rename] = feature["properties"].pop(
+                    property.name
+                )
                 changed = True
 
     return geojson, changed
