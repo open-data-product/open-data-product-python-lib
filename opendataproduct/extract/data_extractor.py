@@ -26,6 +26,7 @@ def extract_data(
                 # Determine file path
                 file_name = urllib.parse.unquote(url.rsplit("/", 1)[-1])
                 file_path = os.path.join(results_path, input_port.id, file_name)
+                _, file_extension = os.path.splitext(file_name)
 
                 # Download file
                 download_file(
@@ -37,7 +38,7 @@ def extract_data(
                 )
 
                 # Unzip file
-                if file_name.endswith(".zip"):
+                if file_extension == ".zip" or file_extension == "":
                     unzip_file(file_path=file_path, file_name=file_name, quiet=quiet)
 
 
