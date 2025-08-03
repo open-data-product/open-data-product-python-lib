@@ -21,7 +21,10 @@ class Add:
 class Property:
     name: str
 
-    # Concat
+    # Value
+    value: Optional[str] = None
+
+    # Concat, zfill, last_chars
     concat: Optional[List[str]] = None
     zfill: Optional[int] = None
     last_chars: Optional[int] = None
