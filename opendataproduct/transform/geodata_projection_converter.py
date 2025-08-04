@@ -42,9 +42,13 @@ def convert_projection(
                         projection = str(geojson["crs"]["properties"]["name"])
                         projection_number = projection.split(":")[-1]
 
-                        if not clean and (
-                            projection_number == str(file.target_projection_number)
-                            or projection_number == "CRS84"
+                        if (
+                            not clean
+                            and file.target_projection_number is not None
+                            and (
+                                projection_number == str(file.target_projection_number)
+                                or projection_number == "CRS84"
+                            )
                         ):
                             already_exists += 1
                             not quiet and print(

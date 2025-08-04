@@ -42,7 +42,7 @@ class Property:
 class File:
     source_file_name: str
     target_file_name: str
-    target_projection_number: int
+    target_projection_number: Optional[int] = None
     properties: Optional[List[Property]] = field(default_factory=list)
 
 
