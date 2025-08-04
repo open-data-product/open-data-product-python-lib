@@ -3,13 +3,18 @@ import os
 
 from tqdm import tqdm
 
+from config.geodata_transformation_loader import DataTransformation
 from opendataproduct.config.geodata_transformation_loader import Property
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 @TrackingDecorator.track_time
 def convert_data_properties(
-    data_transformation, source_path, results_path, clean=False, quiet=False
+    data_transformation: DataTransformation,
+    source_path,
+    results_path,
+    clean=False,
+    quiet=False,
 ):
     """
     Renames and removes properties of geojson features
