@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 
-from config.geodata_transformation_loader import DataTransformation
+from opendataproduct.config.geodata_transformation_loader import DataTransformation
 from opendataproduct.config.geodata_transformation_loader import Property
 from opendataproduct.tracking_decorator import TrackingDecorator
 
