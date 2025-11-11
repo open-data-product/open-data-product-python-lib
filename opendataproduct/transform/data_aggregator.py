@@ -142,6 +142,15 @@ def aggregate_data(
                             dataframe["id"] = 0
                             dataframe.insert(0, "id", dataframe.pop("id"))
 
+                    # Apply copy
+                    for name in [
+                        name
+                        for name in file.names
+                        if name.copy and name.copy in dataframe.columns
+                    ]:
+                        dataframe[name.name] = dataframe[name.copy]
+                        dataframe.insert(0, name.name, dataframe.pop(name.name))
+
                     # Apply zfill
                     for name in [
                         name
