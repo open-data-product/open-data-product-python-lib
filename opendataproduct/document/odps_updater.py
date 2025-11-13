@@ -14,7 +14,7 @@ class IndentDumper(yaml.Dumper):
 
 
 @TrackingDecorator.track_time
-def update_odps(data_product_manifest: DataProductManifest, odps: ODPS, config_path):
+def update_odps(data_product_manifest: DataProductManifest, odps: ODPS, config_path, output_file_formats: list[str] = []):
     odps_path = os.path.join(config_path, "odps.yml")
 
     odps.schema = "https://opendataproducts.org/v3.1/schema/odps.yaml"
@@ -37,7 +37,7 @@ def update_odps(data_product_manifest: DataProductManifest, odps: ODPS, config_p
     odps.product.en.tags = data_product_manifest.tags
     odps.product.en.type = "source-aligned"
     odps.product.en.logoURL = "https://raw.githubusercontent.com/open-data-product/open-data-product-berlin-lor-population-source-aligned/refs/heads/main/logo-with-text.png"
-    odps.product.en.OutputFileFormats = ["csv"]
+    odps.product.en.OutputFileFormats = output_file_formats if output_file_formats is not None else []
 
     with open(odps_path, "w") as file:
         yaml.dump(
