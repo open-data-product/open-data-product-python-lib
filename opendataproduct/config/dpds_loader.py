@@ -244,4 +244,14 @@ def load_dpds(config_path) -> DataProductDescriptor:
         return from_dict(data_class=DataProductDescriptor, data=data)
     else:
         print(f"✗️ Config file {dpds} does not exist")
-        return DataProductDescriptor()
+        return DataProductDescriptor(
+            dataProductDescriptor="data-product-descriptor",
+            info=Info(
+                fullyQualifiedName="fully-qualified-name",
+                name="name",
+                version="1.0",
+                domain="domain",
+                owner=Owner(id="id", name="name"),
+            ),
+            interfaceComponents=InterfaceComponents(outputPorts=[]),
+        )

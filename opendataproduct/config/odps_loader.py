@@ -163,22 +163,22 @@ class UseCaseWrapper:
 
 @dataclass
 class LocalizedInfo:
+    name: str
+    productID: str
+    status: str
+    type: str
+    visibility: str
     OutputFileFormats: Optional[List[str]] = field(default_factory=list)
     brandSlogan: Optional[str] = None
     categories: Optional[List[str]] = field(default_factory=list)
     description: Optional[str] = None
     logoURL: Optional[str] = None
-    name: str = None
-    productID: str = None
     productSeries: Optional[str] = None
     standards: Optional[List[str]] = field(default_factory=list)
-    status: str = None
     tags: Optional[List[str]] = field(default_factory=list)
-    type: str = None
     useCases: Optional[List[UseCaseWrapper]] = field(default_factory=list)
     valueProposition: Optional[str] = None
     version: Optional[str] = None
-    visibility: str = None
 
 
 @dataclass
@@ -243,12 +243,12 @@ class Support:
 
 @dataclass
 class Product:
+    en: LocalizedInfo
     sla: Optional[List[SLA]] = field(default_factory=list)
     dataAccess: Optional[DataAccess] = None
     dataHolder: Optional[DataHolder] = None
     dataOps: Optional[DataOps] = None
     dataQuality: Optional[List[DataQuality]] = field(default_factory=list)
-    en: LocalizedInfo = None
     license: Optional[License] = None
     pricingPlans: Optional[PricingPlans] = None
     support: Optional[Support] = None
@@ -311,4 +311,16 @@ def load_odps(config_path) -> ODPS:
         return from_dict(data_class=ODPS, data=data)
     else:
         print(f"✗️ Config file {data_product_manifest_path} does not exist")
-        return ODPS()
+        return ODPS(
+            schema="schema",
+            version="version",
+            product=Product(
+                en=LocalizedInfo(
+                    name="product-name",
+                    productID="product-id",
+                    status="active",
+                    type="data-product",
+                    visibility="public",
+                )
+            ),
+        )
