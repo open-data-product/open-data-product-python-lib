@@ -311,3 +311,4 @@ def load_odps(config_path) -> ODPS:
         return from_dict(data_class=ODPS, data=data)
     else:
         print(f"✗️ Config file {data_product_manifest_path} does not exist")
+        return ODPS()
