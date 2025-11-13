@@ -11,6 +11,7 @@ from opendataproduct.tracking_decorator import TrackingDecorator
 @TrackingDecorator.track_time
 def create_jupyter_notebook_for_csv(
     data_product_manifest: DataProductManifest,
+    data_path,
     results_path,
     clean=False,
     quiet=False,
@@ -33,7 +34,7 @@ def create_jupyter_notebook_for_csv(
 
     # Identify latest csv file
     csv_file_path_relative = get_latest_csv_file(
-        os.walk(os.path.join(results_path, "data", "03-gold"))
+        os.walk(data_path)
     ).replace(results_path, ".")
 
     if csv_file_path_relative is None:
@@ -105,6 +106,7 @@ def get_latest_csv_file(search_path):
 @TrackingDecorator.track_time
 def create_jupyter_notebook_for_geojson(
     data_product_manifest: DataProductManifest,
+    data_path,
     results_path,
     map_location=[52.516388888889, 13.377777777778],
     map_zoom_start=10,
@@ -129,7 +131,7 @@ def create_jupyter_notebook_for_geojson(
 
     # Identify latest csv file
     geojson_file_path_relative = get_latest_geojson_file(
-        os.walk(os.path.join(results_path, "data", "03-gold"))
+        os.walk(data_path)
     ).replace(results_path, ".")
 
     if geojson_file_path_relative is None:
