@@ -37,14 +37,15 @@ def aggregate_data(
                 geojson_feature_cache_file_path = os.path.join(
                     geojson_path, "geojson-feature-cache.csv"
                 )
+
             source_file_path = os.path.join(
                 source_path, input_port.id, file.source_file_name
             )
             target_file_path_csv = os.path.join(
-                results_path, f"{input_port.id}-csv", target_file_name_csv
+                results_path, f"{input_port.id.replace("-csv", "")}-csv", target_file_name_csv
             )
             target_file_path_parquet = os.path.join(
-                results_path, f"{input_port.id}-parquet", target_file_name_parquet
+                results_path, f"{input_port.id.replace("-csv", "")}-parquet", target_file_name_parquet
             )
 
             if (
