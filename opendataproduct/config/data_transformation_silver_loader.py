@@ -2,10 +2,10 @@ import collections
 import os
 from dataclasses import dataclass, field
 from typing import List, Optional
-from jinja2 import Template
 
 import yaml
 from dacite import from_dict
+from jinja2 import Template
 from yaml import MappingNode
 from yaml.constructor import ConstructorError
 
@@ -104,10 +104,10 @@ class Loader(yaml.SafeLoader):
 
 
 @TrackingDecorator.track_time
-def load_data_transformation_silver(config_path, context=None) -> DataTransformation:
-    data_transformation_path = os.path.join(
-        config_path, "data-transformation-02-silver.yml"
-    )
+def load_data_transformation_silver(
+    config_path, context=None, file_name="data-transformation-02-silver.yml"
+) -> DataTransformation:
+    data_transformation_path = os.path.join(config_path, file_name)
 
     if os.path.exists(data_transformation_path):
         with open(data_transformation_path, "r") as file:

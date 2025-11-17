@@ -124,10 +124,10 @@ class Loader(yaml.SafeLoader):
 
 
 @TrackingDecorator.track_time
-def load_data_transformation_gold(config_path, context=None) -> DataTransformation:
-    data_transformation_path = os.path.join(
-        config_path, "data-transformation-03-gold.yml"
-    )
+def load_data_transformation_gold(
+    config_path, context=None, file_name="data-transformation-03-gold.yml"
+) -> DataTransformation:
+    data_transformation_path = os.path.join(config_path, file_name)
 
     if os.path.exists(data_transformation_path):
         with open(data_transformation_path, "r") as file:
