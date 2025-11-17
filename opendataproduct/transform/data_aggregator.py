@@ -253,8 +253,9 @@ def aggregate_data(
                         dataframe = dataframe.rename(columns={name.name: name.rename})
 
                     # Move ID column to first position
-                    if "id" in dataframe.columns.tolist():
-                        dataframe.insert(0, "id", dataframe.pop("id"))
+                    if "id" not in dataframe.columns.tolist():
+                        dataframe["id"] = 0
+                    dataframe.insert(0, "id", dataframe.pop("id"))
 
                     # Save csv file
                     os.makedirs(os.path.dirname(target_file_path_csv), exist_ok=True)
