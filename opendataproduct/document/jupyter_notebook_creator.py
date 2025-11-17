@@ -33,9 +33,9 @@ def create_jupyter_notebook_for_csv(
     nb = nbf.v4.new_notebook()
 
     # Identify latest csv file
-    csv_file_path_relative = get_latest_csv_file(
-        os.walk(data_path)
-    ).replace(results_path, ".")
+    csv_file_path_relative = get_latest_csv_file(os.walk(data_path)).replace(
+        results_path, "."
+    )
 
     if csv_file_path_relative is None:
         print(
@@ -130,9 +130,9 @@ def create_jupyter_notebook_for_geojson(
     nb = nbf.v4.new_notebook()
 
     # Identify latest csv file
-    geojson_file_path_relative = get_latest_geojson_file(
-        os.walk(data_path)
-    ).replace(results_path, ".")
+    geojson_file_path_relative = get_latest_geojson_file(os.walk(data_path)).replace(
+        results_path, "."
+    )
 
     if geojson_file_path_relative is None:
         print(

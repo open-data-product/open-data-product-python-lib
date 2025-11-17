@@ -984,6 +984,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "setuptools" },
+    { name = "shapely" },
     { name = "tqdm" },
 ]
 
@@ -1004,6 +1005,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "setuptools", specifier = ">=80.9.0" },
+    { name = "shapely", specifier = ">=2.1.2" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
 

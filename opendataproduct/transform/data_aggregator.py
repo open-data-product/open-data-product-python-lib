@@ -1,17 +1,20 @@
+import json
 import os
-from pyproj import Transformer
-
+import math
 import pandas as pd
-
 from opendataproduct.config.data_transformation_gold_loader import (
     DataTransformation,
 )
 from opendataproduct.tracking_decorator import TrackingDecorator
+from pyproj import Transformer
+from shapely.geometry.point import Point
+from shapely.geometry.polygon import Polygon
 
 
 @TrackingDecorator.track_time
 def aggregate_data(
     data_transformation: DataTransformation,
+    geojson_path,
     source_path,
     results_path,
     clean=False,
@@ -25,6 +28,14 @@ def aggregate_data(
             target_file_name_csv = f"{file_name}.csv"
             target_file_name_parquet = f"{file_name}.parquet"
 
+            geojson_template_file_path = (
+                os.path.join(geojson_path, file.geojson_template_file_name)
+                if file.geojson_template_file_name is not None
+                else None
+            )
+            geojson_feature_cache_file_path = os.path.join(
+                geojson_path, "geojson-feature-cache.csv"
+            )
             source_file_path = os.path.join(
                 source_path, input_port.id, file.source_file_name
             )
@@ -65,6 +76,46 @@ def aggregate_data(
                         },
                         errors="ignore",
                     )
+
+                    # Apply value
+                    for name in [name for name in file.names if name.value]:
+                        dataframe[name.name] = name.value
+
+                    # Apply coordinate transformation
+                    for name in [name for name in file.names if name.transform_lon]:
+                        dataframe[name.name] = dataframe.apply(
+                            lambda row: transform_lon(
+                                row[name.transform_lon[0]],
+                                row[name.transform_lon[1]],
+                                name.transform_source,
+                                name.transform_target,
+                            ),
+                            axis=1,
+                        )
+                    for name in [name for name in file.names if name.transform_lat]:
+                        dataframe[name.name] = dataframe.apply(
+                            lambda row: transform_lat(
+                                row[name.transform_lat[0]],
+                                row[name.transform_lat[1]],
+                                name.transform_source,
+                                name.transform_target,
+                            ),
+                            axis=1,
+                        )
+
+                    # Apply geojson lookup
+                    for name in [name for name in file.names if name.geojson_lookup]:
+                        dataframe[name.name] = dataframe.apply(
+                            lambda row: lookup_geojson_feature(
+                                geojson_template_file_path,
+                                geojson_feature_cache_file_path,
+                                [
+                                    row[name.geojson_lookup[0]],
+                                    row[name.geojson_lookup[1]],
+                                ],
+                            ),
+                            axis=1,
+                        )
 
                     # Apply concatenation
                     for name in [name for name in file.names if name.concat]:
@@ -140,7 +191,6 @@ def aggregate_data(
                                 pd.DataFrame(dataframe.sum()).transpose().astype(int)
                             )
                             dataframe["id"] = 0
-                            dataframe.insert(0, "id", dataframe.pop("id"))
 
                     # Apply copy
                     for name in [
@@ -183,28 +233,6 @@ def aggregate_data(
                         dataframe[name.name] = dataframe[name.key].map(name.mapping)
                         dataframe.insert(0, name.name, dataframe.pop(name.name))
 
-                    # Apply coordinate transformation
-                    for name in [name for name in file.names if name.transform_lon]:
-                        dataframe[name.name] = dataframe.apply(
-                            lambda row: transform_lon(
-                                row[name.transform_lon[0]],
-                                row[name.transform_lon[1]],
-                                name.transform_source,
-                                name.transform_target,
-                            ),
-                            axis=1,
-                        )
-                    for name in [name for name in file.names if name.transform_lat]:
-                        dataframe[name.name] = dataframe.apply(
-                            lambda row: transform_lat(
-                                row[name.transform_lat[0]],
-                                row[name.transform_lat[1]],
-                                name.transform_source,
-                                name.transform_target,
-                            ),
-                            axis=1,
-                        )
-
                     # Apply remove
                     dataframe = dataframe.filter(
                         items=[
@@ -221,6 +249,10 @@ def aggregate_data(
                         if name.name in dataframe.columns and name.rename
                     ]:
                         dataframe = dataframe.rename(columns={name.name: name.rename})
+
+                    # Move ID column to first position
+                    if "id" in dataframe.columns.tolist():
+                        dataframe.insert(0, "id", dataframe.pop("id"))
 
                     # Save csv file
                     os.makedirs(os.path.dirname(target_file_path_csv), exist_ok=True)
@@ -245,6 +277,18 @@ def aggregate_data(
     )
 
 
+def load_geojson_file(geojson_template_file_path):
+    with open(
+        file=geojson_template_file_path, mode="r", encoding="utf-8"
+    ) as geojson_file:
+        return json.load(geojson_file, strict=False)
+
+
+def load_csv_file(source_file_path):
+    with open(source_file_path, "r") as csv_file:
+        return pd.read_csv(csv_file, dtype=str)
+
+
 def transform_lon(source_lon, source_lat, transform_source, transform_target):
     lon, _ = Transformer.from_crs(
         transform_source, transform_target, always_xy=True
@@ -257,3 +301,64 @@ def transform_lat(source_lon, source_lat, transform_source, transform_target):
         transform_source, transform_target, always_xy=True
     ).transform(source_lon, source_lat)
     return lat
+
+
+def lookup_geojson_feature(
+    geojson_template_file_path, geojson_feature_cache_file_path, coords: []
+):
+    geojson = load_geojson_file(geojson_template_file_path)
+
+    # Read geojson feature cache
+    if os.path.exists(geojson_feature_cache_file_path):
+        geojson_feature_cache = load_csv_file(geojson_feature_cache_file_path)
+        geojson_feature_cache.set_index("latlon", inplace=True)
+    else:
+        geojson_feature_cache = pd.DataFrame(columns=["latlon", "geojson_feature_id"])
+        geojson_feature_cache.set_index("latlon", inplace=True)
+
+    lat = truncate(coords[0], 4)
+    lon = truncate(coords[1], 4)
+
+    geojson_feature_cache_index = f"{lat}_{lon}"
+
+    # Check if geojson feature is already in cache
+    if geojson_feature_cache_index in geojson_feature_cache.index:
+        return geojson_feature_cache.loc[geojson_feature_cache_index][
+            "geojson_feature_id"
+        ]
+    else:
+        point = Point(lon, lat)
+
+        geojson_feature_id = None
+
+        for feature in geojson["features"]:
+            id = feature["properties"]["id"]
+            coordinates = feature["geometry"]["coordinates"]
+            polygon = build_polygon(coordinates)
+            if point.within(polygon):
+                geojson_feature_id = id
+
+        # Store result in cache
+        if geojson_feature_id is not None:
+            geojson_feature_cache.loc[geojson_feature_cache_index] = {
+                "geojson_feature_id": geojson_feature_id
+            }
+            geojson_feature_cache.assign(
+                geojson_feature_id=lambda df: df["geojson_feature_id"]
+                .astype(int)
+                .astype(str)
+                .str.zfill(8)
+            )
+            geojson_feature_cache.to_csv(geojson_feature_cache_file_path, index=True)
+            return geojson_feature_id
+        else:
+            return 0
+
+
+def truncate(value, digits):
+    return math.floor(value * 10**digits) / 10**digits
+
+
+def build_polygon(coordinates) -> Polygon:
+    points = [tuple(point) for point in coordinates[0][0]]
+    return Polygon(points)

@@ -1,7 +1,7 @@
 import collections
 import os
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 import yaml
 from dacite import from_dict
@@ -23,6 +23,7 @@ class Split:
 class Name:
     name: str
     type: Optional[str] = "str"
+    value: Optional[Any] = None
 
     # Concat and split
     concat: Optional[List[str]] = None
@@ -50,6 +51,9 @@ class Name:
     transform_lat: Optional[List[str]] = None
     transform_lon: Optional[List[str]] = None
 
+    # LOR area lookup
+    geojson_lookup: Optional[List[str]] = None
+
     # Remove and rename
     remove: Optional[bool] = None
     rename: Optional[str] = None
@@ -64,6 +68,7 @@ class Filter:
 
 @dataclass
 class File:
+    geojson_template_file_name: Optional[str]
     source_file_name: str
     target_file_name: str
     aggregate_by: Optional[str | List[str]] = None
