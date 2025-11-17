@@ -14,9 +14,9 @@ from shapely.geometry.polygon import Polygon
 @TrackingDecorator.track_time
 def aggregate_data(
     data_transformation: DataTransformation,
-    geojson_path,
     source_path,
     results_path,
+    geojson_path = None,
     clean=False,
     quiet=False,
 ):
@@ -28,14 +28,15 @@ def aggregate_data(
             target_file_name_csv = f"{file_name}.csv"
             target_file_name_parquet = f"{file_name}.parquet"
 
-            geojson_template_file_path = (
-                os.path.join(geojson_path, file.geojson_template_file_name)
-                if file.geojson_template_file_name is not None
-                else None
-            )
-            geojson_feature_cache_file_path = os.path.join(
-                geojson_path, "geojson-feature-cache.csv"
-            )
+            if geojson_path is not None:
+                geojson_template_file_path = (
+                    os.path.join(geojson_path, file.geojson_template_file_name)
+                    if file.geojson_template_file_name is not None
+                    else None
+                )
+                geojson_feature_cache_file_path = os.path.join(
+                    geojson_path, "geojson-feature-cache.csv"
+                )
             source_file_path = os.path.join(
                 source_path, input_port.id, file.source_file_name
             )
