@@ -131,9 +131,11 @@ def load_data_transformation_gold(
 
     if os.path.exists(data_transformation_path):
         with open(data_transformation_path, "r") as file:
-            context = {} if context is None else context
-            template = Template(file.read()).render(context)
-            data = yaml.load(template, Loader=Loader)
+            if context is None:
+                data = yaml.load(file, Loader=Loader)
+            else:
+                template = Template(file.read()).render(context)
+                data = yaml.load(template, Loader=Loader)
         return from_dict(data_class=DataTransformation, data=data)
     else:
         print(f"✗️ Config file {data_transformation_path} does not exist")

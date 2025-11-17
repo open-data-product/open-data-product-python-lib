@@ -16,7 +16,7 @@ def aggregate_data(
     data_transformation: DataTransformation,
     source_path,
     results_path,
-    geojson_path = None,
+    geojson_path=None,
     clean=False,
     quiet=False,
 ):
@@ -42,10 +42,14 @@ def aggregate_data(
                 source_path, input_port.id, file.source_file_name
             )
             target_file_path_csv = os.path.join(
-                results_path, f"{input_port.id.replace("-csv", "")}-csv", target_file_name_csv
+                results_path,
+                f"{input_port.id.replace("-csv", "")}-csv",
+                target_file_name_csv,
             )
             target_file_path_parquet = os.path.join(
-                results_path, f"{input_port.id.replace("-csv", "")}-parquet", target_file_name_parquet
+                results_path,
+                f"{input_port.id.replace("-csv", "")}-parquet",
+                target_file_name_parquet,
             )
 
             if (

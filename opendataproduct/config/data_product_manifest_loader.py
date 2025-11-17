@@ -2,10 +2,10 @@ import os
 from dataclasses import dataclass, field
 from datetime import date
 from typing import List, Optional
-from jinja2 import Template
 
 import yaml
 from dacite import from_dict
+from jinja2 import Template
 
 from opendataproduct.tracking_decorator import TrackingDecorator
 
@@ -78,9 +78,11 @@ def load_data_product_manifest(config_path, context=None) -> DataProductManifest
 
     if os.path.exists(data_product_manifest_path):
         with open(data_product_manifest_path, "r") as file:
-            context = {} if context is None else context
-            template = Template(file.read()).render(context)
-            data = yaml.load(template, Loader=yaml.SafeLoader)
+            if context is None:
+                data = yaml.load(file, Loader=yaml.SafeLoader)
+            else:
+                template = Template(file.read()).render(context)
+                data = yaml.load(template, Loader=yaml.SafeLoader)
         return from_dict(data_class=DataProductManifest, data=data)
     else:
         print(f"✗️ Config file {data_product_manifest_path} does not exist")
