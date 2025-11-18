@@ -122,6 +122,7 @@ def aggregate_data(
                             ),
                             axis=1,
                         )
+                        dataframe[name.name] = dataframe[name.name].astype(str)
 
                     # Apply concatenation
                     for name in [name for name in file.names if name.concat]:
@@ -323,8 +324,8 @@ def lookup_geojson_feature(
         geojson_feature_cache = pd.DataFrame(columns=["latlon", "geojson_feature_id"])
         geojson_feature_cache.set_index("latlon", inplace=True)
 
-    lat = truncate(coords[0], 4)
-    lon = truncate(coords[1], 4)
+    lat = truncate(float(coords[0]), 4)
+    lon = truncate(float(coords[1]), 4)
 
     geojson_feature_cache_index = f"{lat}_{lon}"
 
