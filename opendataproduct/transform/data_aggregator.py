@@ -69,7 +69,7 @@ def aggregate_data(
                     dataframe = pd.read_csv(csv_file, dtype=str, keep_default_na=False)
 
                     # Apply trim
-                    dataframe = dataframe.applymap(
+                    dataframe = dataframe.map(
                         lambda col: col.strip() if isinstance(col, str) else col
                     )
 
