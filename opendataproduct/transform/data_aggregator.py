@@ -140,13 +140,9 @@ def aggregate_data(
                     # Apply filter
                     for filter in file.filters or []:
                         if filter.operation == "equals":
-                            dataframe = dataframe[
-                                dataframe[filter.key] != filter.value
-                            ]
+                            dataframe = dataframe[dataframe[filter.key] != filter.value]
                         if filter.operation == "does_not_equal":
-                            dataframe = dataframe[
-                                dataframe[filter.key] != filter.value
-                            ]
+                            dataframe = dataframe[dataframe[filter.key] != filter.value]
                         if filter.operation == "starts_with":
                             dataframe = dataframe[
                                 dataframe[filter.key].str.startswith(filter.value)
@@ -195,13 +191,16 @@ def aggregate_data(
 
                     # Apply aggregation
                     if file.aggregate_by is not None:
+                        # Convert all to numeric and drop non-numeric columns
+                        dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
+                        dataframe = dataframe.select_dtypes(include=["number"])
+                        dataframe = dataframe.dropna(axis=1, how="any")
+
                         if file.aggregate_by != "total":
-                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
                             dataframe = dataframe.groupby(
                                 file.aggregate_by, as_index=False
                             ).sum()
                         else:
-                            dataframe = dataframe.apply(pd.to_numeric, errors="coerce")
                             dataframe = (
                                 pd.DataFrame(dataframe.sum()).transpose().astype(int)
                             )
