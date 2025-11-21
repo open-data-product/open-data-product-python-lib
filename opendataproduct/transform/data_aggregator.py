@@ -139,6 +139,14 @@ def aggregate_data(
 
                     # Apply filter
                     for filter in file.filters or []:
+                        if filter.operation == "equals":
+                            dataframe = dataframe[
+                                dataframe[filter.key] != filter.value
+                            ]
+                        if filter.operation == "does_not_equal":
+                            dataframe = dataframe[
+                                dataframe[filter.key] != filter.value
+                            ]
                         if filter.operation == "starts_with":
                             dataframe = dataframe[
                                 dataframe[filter.key].str.startswith(filter.value)
