@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import datetime
 
 import pandas as pd
 
@@ -8,12 +7,12 @@ from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 @TrackingDecorator.track_time
-def convert_data_to_csv(source_path, results_path, clean=False, quiet=False):
-    timestamp = datetime.now().strftime("%Y-%m")
-
+def convert_data_to_csv(
+    source_path, results_path, year, month, clean=False, quiet=False
+):
     # Iterate over files
     for subdir, dirs, files in sorted(os.walk(source_path)):
-        if subdir.endswith("points-of-interest"):
+        if subdir.endswith(f"points-of-interest-{year}-{month}"):
             for file in [
                 file_name
                 for file_name in sorted(files)
@@ -26,7 +25,7 @@ def convert_data_to_csv(source_path, results_path, clean=False, quiet=False):
                 )
                 results_file_path = os.path.join(
                     results_path,
-                    f"{subdir.split(os.sep)[-1]}-{timestamp}",
+                    subdir.split(os.sep)[-1],
                     f"{filename}.csv",
                 )
                 convert_file_to_csv(
