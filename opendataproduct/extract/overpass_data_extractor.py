@@ -3,7 +3,6 @@ import os
 from urllib.parse import quote
 
 import requests
-
 from opendataproduct.config.data_product_manifest_loader import DataProductManifest
 from opendataproduct.tracking_decorator import TrackingDecorator
 
@@ -76,6 +75,8 @@ def extract_overpass_data(
     bounding_box_geojson_path,
     bounding_box_feature_id,
     results_path,
+    year,
+    month,
     clean=False,
     quiet=False,
 ):
@@ -98,7 +99,7 @@ def extract_overpass_data(
 
         file_path = os.path.join(
             results_path,
-            id,
+            f"{id}-{year}-{month}",
             f"{id}-{name.replace('_', '-')}-details.json",
         )
 
@@ -115,11 +116,7 @@ def extract_overpass_data(
 
             # Write json file
             write_json_file(
-                file_path=os.path.join(
-                    results_path,
-                    id,
-                    f"{id}-{name.replace('_', '-')}-details.json",
-                ),
+                file_path=file_path,
                 query_name=name,
                 json_content=overpass_json,
                 clean=clean,
