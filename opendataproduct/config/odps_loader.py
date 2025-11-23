@@ -84,22 +84,22 @@ class DataAccess:
 
 @dataclass
 class DataHolder:
-    URL: Optional[str]
-    addressCountry: Optional[str]
-    addressLocality: Optional[str]
-    addressRegion: Optional[str]
-    streetAddress: Optional[str]
-    postalCode: Optional[str]
-    telephone: Optional[str]
-    aggregateRating: Optional[str]
-    businessDomain: Optional[str]
-    description: Optional[str]
-    logoURL: Optional[str]
-    parentOrganization: Optional[str]
-    ratingCount: Optional[int]
-    slogan: Optional[str]
-    taxID: Optional[str]
-    vatID: Optional[str]
+    URL: Optional[str] = None
+    addressCountry: Optional[str] = None
+    addressLocality: Optional[str] = None
+    addressRegion: Optional[str] = None
+    streetAddress: Optional[str] = None
+    postalCode: Optional[str] = None
+    telephone: Optional[str] = None
+    aggregateRating: Optional[str] = None
+    businessDomain: Optional[str] = None
+    description: Optional[str] = None
+    logoURL: Optional[str] = None
+    parentOrganization: Optional[str] = None
+    ratingCount: Optional[int] = None
+    slogan: Optional[str] = None
+    taxID: Optional[str] = None
+    vatID: Optional[str] = None
 
 
 @dataclass
