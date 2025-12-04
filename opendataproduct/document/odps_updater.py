@@ -41,7 +41,7 @@ def update_odps(
     odps.product.en.version = "1.0"
     odps.product.en.tags = data_product_manifest.tags
     odps.product.en.type = "source-aligned"
-    odps.product.en.logoURL = "https://raw.githubusercontent.com/open-data-product/open-data-product-berlin-lor-population-source-aligned/refs/heads/main/logo-with-text.png"
+    odps.product.en.logoURL = f"https://raw.githubusercontent.com/open-data-product/open-data-product-{data_product_manifest.id}/refs/heads/main/logo-with-text.png"
     odps.product.en.OutputFileFormats = (
         output_file_formats if output_file_formats is not None else []
     )
