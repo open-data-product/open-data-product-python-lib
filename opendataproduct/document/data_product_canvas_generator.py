@@ -1,6 +1,11 @@
 import os
 
-from opendataproduct.config.data_product_manifest_loader import DataProductManifest
+from opendataproduct.config.data_product_manifest_loader import (
+    DataProductManifest,
+    SimplePort,
+    ExtendedPort,
+    Port,
+)
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 DISPLAY_AS_TABLE = True
@@ -36,40 +41,8 @@ def generate_data_product_canvas(
         content += "\n"
 
         for port in data_product_manifest.input_ports or []:
-            content += f"\n### {port.metadata.name}"
+            content += build_port(port)
             content += "\n"
-            if port.metadata.owner:
-                content += f"\n* owner: {port.metadata.owner}"
-            if port.metadata.url:
-                content += f"\n* url: {port.metadata.url}"
-            if port.metadata.license:
-                content += f"\n* license: {port.metadata.license}"
-            if port.metadata.updated:
-                content += f"\n* updated: {port.metadata.updated}"
-            content += "\n"
-
-            if port.metadata.schema:
-                content += "\n**Schema**"
-                content += "\n"
-
-                if DISPLAY_AS_TABLE:
-                    content += "\n| Name | Description |"
-                    content += "\n| --- | --- |"
-
-                    for item in port.metadata.schema or []:
-                        content += f"\n| {item.name} | {item.description} |"
-                else:
-                    for item in port.metadata.schema or []:
-                        content += f"\n* {item.name}: {item.description}"
-                content += "\n"
-
-            if port.files:
-                content += "\n**Files**"
-                content += "\n"
-
-                for file in port.files or []:
-                    content += f"\n* [{file.rsplit('/', 1)[-1]}]({file})"
-                content += "\n"
 
     if data_product_manifest.transformation_steps:
         content += "\n## Transformation Steps"
@@ -84,40 +57,8 @@ def generate_data_product_canvas(
         content += "\n"
 
         for port in data_product_manifest.output_ports or []:
-            content += f"\n### {port.metadata.name}"
+            content += build_port(port)
             content += "\n"
-            if port.metadata.owner:
-                content += f"\n* owner: {port.metadata.owner}"
-            if port.metadata.url:
-                content += f"\n* url: {port.metadata.url}"
-            if port.metadata.license:
-                content += f"\n* license: {port.metadata.license}"
-            if port.metadata.updated:
-                content += f"\n* updated: {port.metadata.updated}"
-            content += "\n"
-
-            if port.metadata.schema:
-                content += "\n**Schema**"
-                content += "\n"
-
-                if DISPLAY_AS_TABLE:
-                    content += "\n| Name | Description |"
-                    content += "\n| --- | --- |"
-
-                    for item in port.metadata.schema or []:
-                        content += f"\n| {item.name} | {item.description} |"
-                else:
-                    for item in port.metadata.schema or []:
-                        content += f"\n* {item.name}: {item.description}"
-                content += "\n"
-
-            if port.files:
-                content += "\n**Files**"
-                content += "\n"
-
-                for file in port.files or []:
-                    content += f"\n* [{file.rsplit('/', 1)[-1]}]({file})"
-                content += "\n"
 
     if data_product_manifest.observability and (
         data_product_manifest.observability.quality
@@ -237,3 +178,50 @@ def generate_data_product_canvas(
 
     with open(data_product_canvas_path, "w") as file:
         file.write(content)
+
+
+def build_port(port: Port):
+    content = ""
+    content += f"\n### {port.id}"
+    content += "\n"
+
+    if isinstance(port, SimplePort):
+        if port.manifest_url:
+            content += f"\n* manifest URL: {port.manifest_url}"
+    if isinstance(port, ExtendedPort):
+        if port.metadata.name:
+            content += f"name: {port.metadata.name}"
+        if port.metadata.owner:
+            content += f"\n* owner: {port.metadata.owner}"
+        if port.metadata.url:
+            content += f"\n* url: {port.metadata.url}"
+        if port.metadata.license:
+            content += f"\n* license: {port.metadata.license}"
+        if port.metadata.updated:
+            content += f"\n* updated: {port.metadata.updated}"
+        content += "\n"
+
+        if port.metadata.schema:
+            content += "\n**Schema**"
+            content += "\n"
+
+            if DISPLAY_AS_TABLE:
+                content += "\n| Name | Description |"
+                content += "\n| --- | --- |"
+
+                for item in port.metadata.schema or []:
+                    content += f"\n| {item.name} | {item.description} |"
+            else:
+                for item in port.metadata.schema or []:
+                    content += f"\n* {item.name}: {item.description}"
+            content += "\n"
+
+        if port.files:
+            content += "\n**Files**"
+            content += "\n"
+
+            for file in port.files or []:
+                content += f"\n* [{file.rsplit('/', 1)[-1]}]({file})"
+            content += "\n"
+
+    return content

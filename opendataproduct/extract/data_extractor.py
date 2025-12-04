@@ -4,7 +4,12 @@ import urllib.parse
 
 import requests
 
-from opendataproduct.config.data_product_manifest_loader import DataProductManifest
+from opendataproduct.config.data_product_manifest_loader import (
+    DataProductManifest,
+    load_data_product_manifest,
+    SimplePort,
+    ExtendedPort,
+)
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 
@@ -18,28 +23,76 @@ def extract_data(
     # Iterate over input ports
     if data_product_manifest.input_ports:
         for input_port in data_product_manifest.input_ports:
-            # Make results path
-            os.makedirs(os.path.join(results_path, input_port.id), exist_ok=True)
+            if isinstance(input_port, SimplePort):
+                url = input_port.manifest_url
 
-            # Iterate over files
-            for url in input_port.files:
                 # Determine file path
-                file_name = urllib.parse.unquote(url.rsplit("/", 1)[-1])
-                file_path = os.path.join(results_path, input_port.id, file_name)
-                _, file_extension = os.path.splitext(file_name)
+                nested_manifest_path = os.path.join(
+                    results_path, f"{input_port.id}-data-product-manifest.yml"
+                )
 
-                # Download file
+                # Download manifest
                 download_file(
-                    file_path=file_path,
-                    file_name=file_name,
+                    file_path=nested_manifest_path,
+                    file_name=os.path.basename(nested_manifest_path),
                     url=url,
-                    clean=clean,
+                    clean=True,
                     quiet=quiet,
                 )
 
-                # Unzip file
-                if file_extension == ".zip" or file_extension == "":
-                    unzip_file(file_path=file_path, file_name=file_name, quiet=quiet)
+                # Load manifest
+                nested_manifest = load_data_product_manifest(
+                    os.path.dirname(nested_manifest_path),
+                    os.path.basename(nested_manifest_path),
+                )
+
+                # Iterate over output ports
+                for nested_output_port in nested_manifest.output_ports:
+                    # Make results path
+                    os.makedirs(
+                        os.path.join(results_path, nested_output_port.id),
+                        exist_ok=True,
+                    )
+
+                    # Iterate over files
+                    for url in nested_output_port.files:
+                        # Determine file path
+                        file_name = url.rsplit("/", 1)[-1]
+                        file_path = os.path.join(
+                            results_path,
+                            nested_output_port.id,
+                            file_name,
+                        )
+
+                        # Download file
+                        download_file(
+                            file_path=file_path,
+                            file_name=file_name,
+                            url=url,
+                            clean=clean,
+                            quiet=quiet,
+                        )
+            if isinstance(input_port, ExtendedPort):
+                # Iterate over files
+                for url in input_port.files:
+                    # Determine file path
+                    file_name = urllib.parse.unquote(str(url).rsplit("/", 1)[-1])
+                    file_path = os.path.join(results_path, input_port.id, file_name)
+
+                    # Download file
+                    download_file(
+                        file_path=file_path,
+                        file_name=file_name,
+                        url=url,
+                        clean=clean,
+                        quiet=quiet,
+                    )
+
+                    # Unzip file
+                    if file_name.endswith(".zip"):
+                        unzip_file(
+                            file_path=file_path, file_name=file_name, quiet=quiet
+                        )
 
 
 def download_file(file_path, file_name, url, clean, quiet):

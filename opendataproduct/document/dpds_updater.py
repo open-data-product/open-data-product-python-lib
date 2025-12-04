@@ -2,6 +2,8 @@ import os
 from dataclasses import asdict
 
 import yaml
+from attr.validators import instance_of
+from opendataproduct.config.data_product_manifest_loader import ExtendedPort
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 from opendataproduct.config.dpds_loader import (
@@ -29,12 +31,12 @@ def update_dpds(data_product_manifest, dpds, config_path):
 
     dpds.info.id = data_product_manifest.id
     dpds.info.fullyQualifiedName = (
-        f"urn:dpds:opendataproduct:dataproducts:{data_product_manifest.id}:1.0"
+        f"urn:dpds:openlifeworlds:dataproducts:{data_product_manifest.id}:1.0"
     )
     dpds.info.name = data_product_manifest.metadata.name
     dpds.info.version = "1.0"
-    dpds.info.owner.id = "Open Data product"
-    dpds.info.owner.name = "Open Data product"
+    dpds.info.owner.id = "Open Lifeworlds"
+    dpds.info.owner.name = "Open Lifeworlds"
     dpds.info.displayName = data_product_manifest.metadata.name
     dpds.info.description = data_product_manifest.metadata.description
 
@@ -56,7 +58,8 @@ def update_dpds(data_product_manifest, dpds, config_path):
         input_port = InputPort()
         input_port.id = port.id
         input_port.fullyQualifiedName = port.id
-        input_port.description = port.metadata.description
+        if isinstance(port, ExtendedPort):
+            input_port.description = port.metadata.description
 
         dpds.interfaceComponents.inputPorts.append(input_port)
 

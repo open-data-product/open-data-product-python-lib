@@ -6,9 +6,9 @@ import yaml
 
 from opendataproduct.config.data_product_manifest_loader import (
     DataProductManifest,
-    Port,
     Metadata,
 )
+from opendataproduct.config.data_product_manifest_loader import ExtendedPort
 from opendataproduct.tracking_decorator import TrackingDecorator
 
 
@@ -19,7 +19,11 @@ class IndentDumper(yaml.Dumper):
 
 @TrackingDecorator.track_time
 def update_data_product_manifest(
-    data_product_manifest: DataProductManifest, config_path, data_paths, file_endings=()
+    data_product_manifest: DataProductManifest,
+    config_path,
+    data_paths,
+    file_endings=(),
+    git_lfs=False,
 ):
     data_product_manifest_path = os.path.join(config_path, "data-product-manifest.yml")
     data_product_manifest.metadata.updated = datetime.today().date()
@@ -34,7 +38,7 @@ def update_data_product_manifest(
                 repo_organization = (
                     data_product_manifest.metadata.owner.lower().replace(" ", "-")
                 )
-                repo = f"open-data-product-{data_product_manifest.id}"
+                repo = f"open-lifeworlds-data-product-{data_product_manifest.id}"
 
                 existing_output_port = (
                     next(
@@ -49,7 +53,7 @@ def update_data_product_manifest(
                     else None
                 )
                 output_ports.append(
-                    Port(
+                    ExtendedPort(
                         id=id,
                         metadata=Metadata(
                             name=id.replace("-", " ").title(),
@@ -66,6 +70,8 @@ def update_data_product_manifest(
                         ),
                         files=[
                             f"https://raw.githubusercontent.com/{repo_organization}/{repo}/main/data/{os.path.basename(data_path)}/{id}/{file}"
+                            if not git_lfs
+                            else f"https://media.githubusercontent.com/media/{repo_organization}/{repo}/refs/heads/main/data/{os.path.basename(data_path)}/{id}/{file}"
                             for file in sorted(
                                 [file for file in files if file.endswith(file_endings)]
                             )
