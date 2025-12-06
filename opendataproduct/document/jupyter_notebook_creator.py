@@ -33,15 +33,15 @@ def create_jupyter_notebook_for_csv(
     nb = nbf.v4.new_notebook()
 
     # Identify latest csv file
-    csv_file_path_relative = get_latest_csv_file(os.walk(data_path)).replace(
-        results_path, "."
-    )
+    csv_file_path_relative = get_latest_csv_file(os.walk(data_path))
 
     if csv_file_path_relative is None:
         print(
             f"✗️ Warning: no csv file found in {os.path.join(results_path, "data", "03-gold")}"
         )
         return
+
+    csv_file_path_relative = csv_file_path_relative.replace(results_path, ".")
 
     # Add the cells to the notebook
     nb["cells"] = [
@@ -130,15 +130,15 @@ def create_jupyter_notebook_for_geojson(
     nb = nbf.v4.new_notebook()
 
     # Identify latest csv file
-    geojson_file_path_relative = get_latest_geojson_file(os.walk(data_path)).replace(
-        results_path, "."
-    )
+    geojson_file_path_relative = get_latest_geojson_file(os.walk(data_path))
 
     if geojson_file_path_relative is None:
         print(
             f"✗️ Warning: no csv file found in {os.path.join(results_path, "data", "03-gold")}"
         )
         return
+
+    geojson_file_path_relative = geojson_file_path_relative.replace(results_path, ".")
 
     # Add the cells to the notebook
     nb["cells"] = [
