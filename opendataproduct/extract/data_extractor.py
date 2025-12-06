@@ -1,6 +1,6 @@
 import os
-import zipfile
 import urllib.parse
+import zipfile
 
 import requests
 
@@ -78,6 +78,9 @@ def extract_data(
                     # Determine file path
                     file_name = urllib.parse.unquote(str(url).rsplit("/", 1)[-1])
                     file_path = os.path.join(results_path, input_port.id, file_name)
+
+                    # Make results path
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
                     # Download file
                     download_file(
