@@ -34,7 +34,6 @@ def extract_data(
                 # Download manifest
                 download_file(
                     file_path=nested_manifest_path,
-                    file_name=os.path.basename(nested_manifest_path),
                     url=url,
                     clean=True,
                     quiet=quiet,
@@ -67,7 +66,6 @@ def extract_data(
                         # Download file
                         download_file(
                             file_path=file_path,
-                            file_name=file_name,
                             url=url,
                             clean=clean,
                             quiet=quiet,
@@ -85,7 +83,6 @@ def extract_data(
                     # Download file
                     download_file(
                         file_path=file_path,
-                        file_name=file_name,
                         url=url,
                         clean=clean,
                         quiet=quiet,
@@ -94,11 +91,11 @@ def extract_data(
                     # Unzip file
                     if file_name.endswith(".zip"):
                         unzip_file(
-                            file_path=file_path, file_name=file_name, quiet=quiet
+                            file_path=file_path, quiet=quiet
                         )
 
 
-def download_file(file_path, file_name, url, clean, quiet):
+def download_file(file_path, url, clean, quiet):
     # Check if result needs to be generated
     if clean or not os.path.exists(file_path):
         try:
@@ -106,17 +103,17 @@ def download_file(file_path, file_name, url, clean, quiet):
             if str(data.status_code).startswith("2"):
                 with open(file_path, "wb") as file:
                     file.write(data.content)
-                not quiet and print(f"✓ Download {file_name}")
+                not quiet and print(f"✓ Download {os.path.basename(file_path)}")
             else:
                 not quiet and print(f"✗️ Error: {str(data.status_code)}, url {url}")
         except Exception as e:
             print(f"✗️ Exception: {str(e)}, url {url}")
 
     else:
-        not quiet and print(f"✓ Already exists {file_name}")
+        not quiet and print(f"✓ Already exists {os.path.basename(file_path)}")
 
 
-def unzip_file(file_path, file_name, quiet):
+def unzip_file(file_path, quiet):
     try:
         with zipfile.ZipFile(file_path, "r") as zip_ref:
             for member in zip_ref.namelist():
@@ -131,6 +128,6 @@ def unzip_file(file_path, file_name, quiet):
                     ) as target:
                         target.write(source.read())
 
-            not quiet and print(f"✓ Unzip {file_name}")
+            not quiet and print(f"✓ Unzip {os.path.basename(file_path)}")
     except Exception as e:
-        print(f"✗️ Exception: {str(e)}, file {file_name}")
+        print(f"✗️ Exception: {str(e)}, file {os.path.basename(file_path)}")
