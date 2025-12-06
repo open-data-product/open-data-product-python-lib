@@ -16,6 +16,8 @@ def convert_data_to_csv(
     data_transformation: DataTransformation,
     source_path,
     results_path,
+    encoding="utf-8",
+    delimiter=",",
     clean=False,
     quiet=False,
 ):
@@ -73,6 +75,8 @@ def convert_data_to_csv(
                             ),
                             skiprows=dataset.skip_rows,
                             keep_default_na=False,
+                            encoding=encoding,
+                            delimiter=delimiter,
                         )
                     else:
                         raise ValueError(
