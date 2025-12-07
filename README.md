@@ -3,7 +3,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/open-data-product/open-data-product-python-lib">
-    <img src="logo-with-text.png" alt="Logo" height="80">
+    <img src="logo-with-text.png" alt="Logo" style="height: 80px">
   </a>
 
   <h1 align="center">Python Lib</h1>

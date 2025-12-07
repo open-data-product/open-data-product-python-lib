@@ -2,10 +2,8 @@ import os
 from dataclasses import asdict
 
 import yaml
-from attr.validators import instance_of
-from opendataproduct.config.data_product_manifest_loader import ExtendedPort
-from opendataproduct.tracking_decorator import TrackingDecorator
 
+from opendataproduct.config.data_product_manifest_loader import ExtendedPort
 from opendataproduct.config.dpds_loader import (
     Info,
     Owner,
@@ -13,6 +11,7 @@ from opendataproduct.config.dpds_loader import (
     OutputPort,
     InputPort,
 )
+from opendataproduct.tracking_decorator import TrackingDecorator
 
 
 class IndentDumper(yaml.Dumper):
@@ -46,7 +45,7 @@ def update_dpds(data_product_manifest, dpds, config_path):
     dpds.interfaceComponents.outputPorts = []
     dpds.interfaceComponents.inputPorts = []
 
-    for port in data_product_manifest.output_ports:
+    for port in data_product_manifest.output_ports or []:
         output_port = OutputPort()
         output_port.id = port.id
         output_port.fullyQualifiedName = port.id
@@ -54,7 +53,7 @@ def update_dpds(data_product_manifest, dpds, config_path):
 
         dpds.interfaceComponents.outputPorts.append(output_port)
 
-    for port in data_product_manifest.input_ports:
+    for port in data_product_manifest.input_ports or []:
         input_port = InputPort()
         input_port.id = port.id
         input_port.fullyQualifiedName = port.id

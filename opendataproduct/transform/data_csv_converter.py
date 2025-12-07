@@ -157,11 +157,9 @@ def convert_data_to_csv(
                         dataframe[name.name] = dataframe[name.name].apply(
                             lambda row: build_phone_number(row),
                         )
-                    for name in [
-                        name for name in names if name.format == "coordinate"
-                    ]:
+                    for name in [name for name in names if name.format == "coordinate"]:
                         dataframe[name.name] = dataframe[name.name].apply(
-                            lambda row: row.replace('\"', '').replace(",", "."),
+                            lambda row: row.replace('"', "").replace(",", "."),
                         )
 
                     # Apply head

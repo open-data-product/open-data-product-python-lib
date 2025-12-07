@@ -90,9 +90,7 @@ def extract_data(
 
                     # Unzip file
                     if file_name.endswith(".zip"):
-                        unzip_file(
-                            file_path=file_path, quiet=quiet
-                        )
+                        unzip_file(file_path=file_path, quiet=quiet)
 
 
 def download_file(file_path, url, clean, quiet):
