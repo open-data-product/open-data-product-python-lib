@@ -30,12 +30,12 @@ def update_dpds(data_product_manifest, dpds, config_path):
 
     dpds.info.id = data_product_manifest.id
     dpds.info.fullyQualifiedName = (
-        f"urn:dpds:openlifeworlds:dataproducts:{data_product_manifest.id}:1.0"
+        f"urn:dpds:opendataproduct:dataproducts:{data_product_manifest.id}:1.0"
     )
     dpds.info.name = data_product_manifest.metadata.name
     dpds.info.version = "1.0"
-    dpds.info.owner.id = "Open Lifeworlds"
-    dpds.info.owner.name = "Open Lifeworlds"
+    dpds.info.owner.id = "Open Data Product"
+    dpds.info.owner.name = "Open Data Product"
     dpds.info.displayName = data_product_manifest.metadata.name
     dpds.info.description = data_product_manifest.metadata.description
 
