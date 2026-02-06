@@ -3,6 +3,8 @@ import os
 from urllib.parse import quote
 
 import requests
+from retry import retry
+
 from opendataproduct.config.data_product_manifest_loader import DataProductManifest
 from opendataproduct.tracking_decorator import TrackingDecorator
 
@@ -148,6 +150,7 @@ def read_geojson_file(file_path):
         return json.load(geojson_file, strict=False)
 
 
+@retry(tries=5, delay=2)
 def extract_overpass_json(type, query, xmin, ymin, xmax, ymax):
     try:
         data = f"""
