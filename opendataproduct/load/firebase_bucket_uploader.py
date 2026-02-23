@@ -31,12 +31,15 @@ def upload_to_firebase_bucket(
             blob_name = subdir.replace(f"{data_path}/", "") + "/" + file_name
             blob = bucket.blob(blob_name)
 
-            blob.upload_from_filename(
-                str(os.path.join(subdir, file_name)),
-                content_type=build_mime_type(file_name),
-            )
+            if clean or not blob.exists():
+                blob.upload_from_filename(
+                    str(os.path.join(subdir, file_name)),
+                    content_type=build_mime_type(file_name),
+                )
 
-            not quiet and print(f"✓ Upload {file_name} to {blob_name}")
+                not quiet and print(f"✓ Upload {file_name} to {blob_name}")
+            else:
+                not quiet and print(f"✓ Already exists {blob_name}")
 
 
 def build_mime_type(file_name):
