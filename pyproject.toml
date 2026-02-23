@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "dacite>=1.9.2",
+    "firebase-admin>=7.1.0",
     "folium>=0.20.0",
     "geopandas>=1.1.0",
     "ipython>=9.6.0",
