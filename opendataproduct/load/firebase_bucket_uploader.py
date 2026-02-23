@@ -30,8 +30,9 @@ def upload_to_firebase_bucket(
             bucket = storage.bucket()
             blob_name = subdir.replace(f"{data_path}/", "") + "/" + file_name
             blob = bucket.blob(blob_name)
+
             blob.upload_from_filename(
-                os.path.join(subdir, file_name),
+                str(os.path.join(subdir, file_name)),
                 content_type=build_mime_type(file_name),
             )
 
