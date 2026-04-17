@@ -90,14 +90,14 @@ def convert_data_to_csv(
                         dataframe = dataframe[~(dataframe == "").any(axis=1)]
 
                     # Replace line breaks
-                    dataframe = dataframe.applymap(
+                    dataframe = dataframe.map(
                         lambda x: x.replace("\n", "").replace("\r", "")
                         if isinstance(x, str)
                         else x
                     )
 
                     # Apply trim
-                    dataframe = dataframe.applymap(
+                    dataframe = dataframe.map(
                         lambda col: col.strip() if isinstance(col, str) else col
                     )
 
