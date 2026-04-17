@@ -1,7 +1,7 @@
 import os
-import urllib.parse
 import zipfile
-
+import urllib.parse
+from urllib.parse import urlparse, urlunparse
 import requests
 
 from opendataproduct.config.data_product_manifest_loader import (
@@ -56,7 +56,11 @@ def extract_data(
                     # Iterate over files
                     for url in nested_output_port.files:
                         # Determine file path
-                        file_name = url.rsplit("/", 1)[-1]
+                        u = urlparse(url)
+                        clean_url = urlunparse(
+                            (u.scheme, u.netloc, u.path, u.params, "", u.fragment)
+                        )
+                        file_name = clean_url.rsplit("/", 1)[-1]
                         file_path = os.path.join(
                             results_path,
                             nested_output_port.id,
@@ -74,7 +78,11 @@ def extract_data(
                 # Iterate over files
                 for url in input_port.files:
                     # Determine file path
-                    file_name = urllib.parse.unquote(str(url).rsplit("/", 1)[-1])
+                    u = urlparse(url)
+                    clean_url = urlunparse(
+                        (u.scheme, u.netloc, u.path, u.params, "", u.fragment)
+                    )
+                    file_name = urllib.parse.unquote(str(clean_url).rsplit("/", 1)[-1])
                     file_path = os.path.join(results_path, input_port.id, file_name)
 
                     # Make results path
