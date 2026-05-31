@@ -140,7 +140,7 @@ def aggregate_data(
                     # Apply filter
                     for filter in file.filters or []:
                         if filter.operation == "equals":
-                            dataframe = dataframe[dataframe[filter.key] != filter.value]
+                            dataframe = dataframe[dataframe[filter.key] == filter.value]
                         if filter.operation == "does_not_equal":
                             dataframe = dataframe[dataframe[filter.key] != filter.value]
                         if filter.operation == "starts_with":
@@ -265,9 +265,8 @@ def aggregate_data(
                         dataframe = dataframe.rename(columns={name.name: name.rename})
 
                     # Move ID column to first position
-                    if "id" not in dataframe.columns.tolist():
-                        dataframe["id"] = 0
-                    dataframe.insert(0, "id", dataframe.pop("id"))
+                    if "id" in dataframe.columns.tolist():
+                        dataframe.insert(0, "id", dataframe.pop("id"))
 
                     # Save csv file
                     os.makedirs(os.path.dirname(target_file_path_csv), exist_ok=True)
