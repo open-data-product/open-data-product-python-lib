@@ -81,6 +81,7 @@ def convert_projection(
                         ),
                     )
 
+                    os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
                     with open(
                         target_file_path, "w", encoding="utf-8"
                     ) as geojson_polar_file:

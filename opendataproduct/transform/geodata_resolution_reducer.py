@@ -119,7 +119,6 @@ def reduce_resolution(
                     continue
 
                 try:
-                    os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
                     with open(source_file_path, "r", encoding="utf-8") as geojson_file:
                         geojson = json.load(geojson_file, strict=False)
 
@@ -137,6 +136,7 @@ def reduce_resolution(
 
                     geojson["features"] = reduced_features
 
+                    os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
                     with open(target_file_path, "w", encoding="utf-8") as out_file:
                         json.dump(geojson, out_file, ensure_ascii=False)
 
