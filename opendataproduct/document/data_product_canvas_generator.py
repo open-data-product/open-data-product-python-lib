@@ -190,7 +190,7 @@ def build_port(port: Port):
             content += f"\n* manifest URL: {port.manifest_url}"
     if isinstance(port, ExtendedPort):
         if port.metadata.name:
-            content += f"name: {port.metadata.name}"
+            content += f"* name: {port.metadata.name}"
         if port.metadata.owner:
             content += f"\n* owner: {port.metadata.owner}"
         if port.metadata.url:
